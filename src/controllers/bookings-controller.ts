@@ -38,7 +38,7 @@ export async function bookUserRoom(req: AuthenticatedRequest, res: Response){
         if(error.status){
             return res.status(error.status).send(error.message)
         }
-        return res.send(error)
+        return res.status(403).send(error)
     }
 
 

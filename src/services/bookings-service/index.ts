@@ -1,4 +1,7 @@
 import bookingRepository from "@/repositories/booking-repository"
+import enrollmentRepository from "@/repositories/enrollment-repository"
+import ticketRepository from "@/repositories/ticket-repository"
+import httpStatus from "http-status"
 
 
 async function getUserBooking(userId: number){
@@ -16,6 +19,17 @@ async function postBookUserRoom(roomId: number, userId: number){
     const room = await bookingRepository.findRoomById(roomId)
 
     if(!room) throw {message: "room doesn't exist", status: 404}
+
+    const enrollmentUserId = await enrollmentRepository.findWithAddressByUserId(userId)
+  
+    const ticketUser= await ticketRepository.findTicketByEnrollmentId(enrollmentUserId.id)
+
+    if(ticketUser.status !== "PAID") throw {message:"Error Payment Required" , status: httpStatus.PAYMENT_REQUIRED}
+
+    const ticketType = await ticketRepository.findTicketTypeById(ticketUser.ticketTypeId)
+
+    if(ticketType.isRemote === true) throw {message: "Remote event", status: 401}
+    if(ticketType.includesHotel === false) throw {message: "Hotel doesn't include", status: 401}
 
     const roomAvailable = await bookingRepository.findRoomBooking(roomId)
     
