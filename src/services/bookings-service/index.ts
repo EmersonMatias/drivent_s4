@@ -40,9 +40,32 @@ async function postBookUserRoom(roomId: number, userId: number){
     return booking
 }
 
+async function upadteBookUserRoom(newRoomId: number, userId: number, bookingId: number){
+    if(!newRoomId) throw {message: "room empty", status: 403}
+
+    const bookExist = await bookingRepository.getBookingById(bookingId)
+
+    //verificar se o usuario realmente é o pertencente a essa reserva pelo id   
+    if(!bookExist) throw {message: "book doesn't exist", status: 401}
+
+    const room = await bookingRepository.findRoomById(newRoomId)
+
+    if(!room) throw {message: "room doesn't exist", status: 404}
+
+    const roomAvailable = await bookingRepository.findRoomBooking(newRoomId)
+
+    if(room.capacity === roomAvailable) throw {message: "room is filled", status: 403}
+   
+    const newBooking = await bookingRepository.upadteBookingUser(newRoomId, bookingId)
+    
+    return newBooking
+    
+}
+
 const bookingsService = {
     getUserBooking,
-    postBookUserRoom
+    postBookUserRoom,
+    upadteBookUserRoom
 }
 
 export default bookingsService 
