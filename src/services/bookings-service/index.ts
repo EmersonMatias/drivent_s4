@@ -14,7 +14,7 @@ async function getUserBooking(userId: number){
 }
 
 async function postBookUserRoom(roomId: number, userId: number){
-    if(!roomId) throw {message: "room empty", status: 403}
+    if(!roomId) throw {message: "body is empty", status: 403}
 
     const room = await bookingRepository.findRoomById(roomId)
 
@@ -45,21 +45,23 @@ async function upadteBookUserRoom(newRoomId: number, userId: number, bookingId: 
 
     const bookExist = await bookingRepository.getBookingById(bookingId)
 
-    //verificar se o usuario realmente é o pertencente a essa reserva pelo id   
+    //Verificar se existe reserva do quarto
     if(!bookExist) throw {message: "book doesn't exist", status: 401}
 
-    const room = await bookingRepository.findRoomById(newRoomId)
+    //Verificar se a reserva do quarto é realmente do usuário
+    if(bookExist.userId !== userId) throw {message: "user doesn't have a book", status: 401}
 
+    const room = await bookingRepository.findRoomById(newRoomId)
+    //Verificar se novo quarto existe
     if(!room) throw {message: "room doesn't exist", status: 404}
 
     const roomAvailable = await bookingRepository.findRoomBooking(newRoomId)
-
+    //Verificar se novo quarto tem vagas
     if(room.capacity === roomAvailable) throw {message: "room is filled", status: 403}
-   
+   //Cadastrando atualização
     const newBooking = await bookingRepository.upadteBookingUser(newRoomId, bookingId)
     
     return newBooking
-    
 }
 
 const bookingsService = {
