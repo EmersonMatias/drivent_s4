@@ -5,12 +5,12 @@ async function findTicketTypes() {
   return prisma.ticketType.findMany();
 }
 
-async function findTicketTypeById(id: number){
+async function findTicketTypeById(id: number) {
   return prisma.ticketType.findUnique({
     where: {
       id
     }
-  })
+  });
 }
 
 async function findTickeyById(ticketId: number) {
@@ -77,3 +77,4 @@ const ticketRepository = {
 };
 
 export default ticketRepository;
+

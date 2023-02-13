@@ -40,4 +40,3 @@ export function handleApplicationErrors(err: ApplicationError | Error, _req: Req
     message: "Internal Server Error",
   });
 }
-   
